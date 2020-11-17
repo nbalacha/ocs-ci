@@ -1058,3 +1058,19 @@ def generate_node_names_for_vsphere(count, prefix="compute-"):
         f"{prefix}{current_compute_suffix + node_count}"
         for node_count in range(1, count + 1)
     ]
+
+
+def taint_nodes(nodes, taint_label=constants.OCS_TAINT):
+    """
+    Taint nodes
+
+    Args:
+        nodes (list): list of node names need to taint
+        taint_label (str): New taint label to be assigned for these nodes.
+            Default value is the OCS taint
+
+    """
+    for node in nodes:
+        command = f"adm taint node {node.name} {taint_label}"
+        node.exec_oc_cmd(command)
+        logging.info(f"Successfully tainted {node.name} " f"with OCS storage taint")
