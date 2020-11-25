@@ -56,7 +56,7 @@ class Postgresql(RipSaw):
         """
         RipSaw.apply_crd(self, crd=crd)
 
-    def setup_postgresql(self, replicas):
+    def setup_postgresql(self, replicas, sc_name=None):
         """
         Deploy postgres sql server
 
@@ -73,6 +73,8 @@ class Postgresql(RipSaw):
             pgsql_cmap = templating.load_yaml(constants.PGSQL_CONFIGMAP_YAML)
             pgsql_sset = templating.load_yaml(constants.PGSQL_STATEFULSET_YAML)
             pgsql_sset["spec"]["replicas"] = replicas
+            if sc_name:
+                pgsql_sset['spec']['volumeClaimTemplates'][0]['spec']['storageClassName'] = sc_name
             self.pgsql_service = OCS(**pgsql_service)
             self.pgsql_service.create()
             self.pgsql_cmap = OCS(**pgsql_cmap)
