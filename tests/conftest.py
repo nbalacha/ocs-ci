@@ -2362,6 +2362,7 @@ def pgsql_factory_fixture(request):
         transactions=None,
         scaling_factor=None,
         timeout=None,
+        sc_name=None
     ):
         """
         Factory to start pgsql workload
@@ -2376,7 +2377,7 @@ def pgsql_factory_fixture(request):
 
         """
         # Setup postgres
-        pgsql.setup_postgresql(replicas=replicas)
+        pgsql.setup_postgresql(replicas=replicas, sc_name=sc_name)
 
         # Create pgbench benchmark
         pgsql.create_pgbench_benchmark(
@@ -2464,7 +2465,7 @@ def couchbase_factory_fixture(request):
     """
     couchbase = CouchBase()
 
-    def factory(replicas=3, run_in_bg=False, skip_analyze=True):
+    def factory(replicas=3, run_in_bg=False, skip_analyze=True, sc_name=None):
         """
         Factory to start couchbase workload
 
@@ -2476,7 +2477,7 @@ def couchbase_factory_fixture(request):
         # Setup couchbase
         couchbase.setup_cb()
         # Create couchbase workers
-        couchbase.create_couchbase_worker(replicas=replicas)
+        couchbase.create_couchbase_worker(replicas=replicas, sc_name=sc_name)
         # Run couchbase workload
         couchbase.run_workload(replicas=replicas, run_in_bg=run_in_bg)
         # Run sanity check on data logs
