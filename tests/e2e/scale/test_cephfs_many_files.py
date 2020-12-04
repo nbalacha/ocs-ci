@@ -49,9 +49,12 @@ def add_million_files(pod_name, ocp_obj):
             test_file_list.append(fname.split(os.sep)[-1])
     tmploc = ntar_loc.split("/")[-1]
     run_cmd(f"tar cfz {tarfile} -C {new_dir} .")
-    ocp_obj.exec_oc_cmd(
-        f"rsync {ntar_loc} {pod_name}:{constants.MOUNT_POINT}", timeout=300
-    )
+    try:
+        ocp_obj.exec_oc_cmd(
+            f"rsync {ntar_loc} {pod_name}:{constants.MOUNT_POINT}", timeout=300
+        )
+    except Exception as err:
+        logging.error(err)
     ocp_obj.exec_oc_cmd(f"exec {pod_name} -- mkdir {constants.MOUNT_POINT}/x")
     ocp_obj.exec_oc_cmd(
         f"exec {pod_name} -- /bin/tar xf"
@@ -86,9 +89,7 @@ class MillionFilesOnCephfs(object):
         )
         self.cephfs_pod = helpers.create_pod(
             interface_type=constants.CEPHFILESYSTEM,
-            namespace=config.ENV_DATA["cluster_namespace"],
             pvc_name=pvc_name,
-            node_name="compute-0",
             pod_name=self.pod_name,
         )
         helpers.wait_for_resource_state(
